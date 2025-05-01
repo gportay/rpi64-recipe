@@ -1,4 +1,5 @@
 {{- $firmware_version := or .firmware_version "1.20250430" -}}
+{{- $kernel_version := or .kernel_version "6.12.25" -}}
 {{- $mirror := or .mirror "http://archive.raspberrypi.com/debian" -}}
 {{- $suite := or .suite "bookworm" -}}
 {{- $kernel := or .kernel "linux-image-arm64" -}}
@@ -42,35 +43,18 @@ actions:
       - openssh-server
       - sudo
       - systemd-sysv
-      - u-boot-menu
-      - u-boot-rpi
       - vim-tiny
       - systemd-timesyncd
-
-  - action: overlay
-    description: Install U-Boot menu configuration
-    source: overlays/u-boot-menu
 
   - action: apt
     description: Install kernel and firmware packages for RPi
     packages:
-      - {{ $kernel}}
       - rpi.gpio-common
 
   - action: overlay
-    description: Copy config.txt
+    description: Copy firmware files
     source: overlays/fw-config
     destination: /boot/firmware
-
-  - action: run
-    description: Install U-Boot
-    chroot: false
-    command: sh -c "cp -av ${ROOTDIR}/usr/lib/u-boot/rpi_arm64/u-boot.bin ${ROOTDIR}/boot/firmware/"
-
-  - action: run
-    description: Copy DTBs for the kernel
-    chroot: false
-    command: sh -c "mkdir -p ${ROOTDIR}/boot/dtbs; cp -rav ${ROOTDIR}/usr/lib/linux-image-*-arm64/broadcom ${ROOTDIR}/boot/dtbs/"
 
   - action: overlay
     description: Install RPi boot firmware ({{ $firmware_version }})
@@ -81,7 +65,18 @@ actions:
   - action: run
     description: Cleanup firmware partition
     chroot: false
-    command: sh -c "rm -rf ${ROOTDIR}/boot/firmware/kernel* ${ROOTDIR}/boot/firmware/vmlinuz* ${ROOTDIR}/boot/firmware/initrd.img*"
+    command: bash -c "rm -rf ${ROOTDIR}/boot/firmware/bcm270{8,9}*.dtb ${ROOTDIR}/boot/firmware/kernel{,7,7l}.img"
+
+  - action: overlay
+    description: Install RPi modules ({{ $firmware_version }})
+    origin: firmware
+    source: firmware-{{ $firmware_version }}/modules
+    destination: /usr/lib/modules
+
+  - action: run
+    description: Cleanup root partition
+    chroot: false
+    command: bash -c "rm -rf ${ROOTDIR}/usr/lib/modules/6.12.25{,-v7,-v7l}+/"
 
   - action: run
     description: Set up user
