@@ -1,8 +1,8 @@
 #!/bin/sh
 
-adduser --gecos user \
+adduser --gecos pi \
   --disabled-password \
   --shell /bin/bash \
-  user
-adduser user sudo
-echo "user:user" | chpasswd
+  pi
+adduser pi sudo
+echo "pi:raspberry" | chpasswd
