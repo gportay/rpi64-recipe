@@ -99,6 +99,11 @@ actions:
     chroot: true
     script: scripts/setup-networking.sh
 
+  - action: overlay
+    description: Copy etc
+    source: overlays/etc
+    destination: /etc
+
   - action: image-partition
     imagename: {{ $image }}
     imagesize: 4GB
