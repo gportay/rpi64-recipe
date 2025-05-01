@@ -104,6 +104,14 @@ actions:
     source: overlays/etc
     destination: /etc
 
+  - action: apt
+    description: Install Chromium
+    packages:
+      - chromium-browser
+      - xinit
+      - xinput
+      - xserver-xorg-core
+
   - action: image-partition
     imagename: {{ $image }}
     imagesize: 4GB

@@ -5,7 +5,7 @@ all: rpios-rpi64.img.gz
 
 rpios-rpi64.img.gz: 1.20250430.tar.gz
 rpios-rpi64.img.gz: rpi64.yaml
-	debos $<
+	debos --scratchsize=8G $<
 
 1.20250430.tar.gz:
 %.tar.gz:
