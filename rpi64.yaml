@@ -43,8 +43,8 @@ actions:
       - openssh-server
       - sudo
       - systemd-sysv
-      - vim-tiny
       - systemd-timesyncd
+      - vim
 
   - action: apt
     description: Install kernel and firmware packages for RPi
